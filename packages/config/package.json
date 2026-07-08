@@ -1,0 +1,23 @@
+{
+  "name": "@howard-aios/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint": "./src/eslint.ts",
+    "./typescript": "./src/typescript.json",
+    "./prettier": "./src/prettier.json"
+  },
+  "files": ["src"],
+  "scripts": {
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "howard-aios",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "prepare": "husky",
+    "start": "bash dev.sh",
+    "demo": "bash demo.sh",
+    "doctor": "bash scripts/doctor.sh",
+    "check": "bash scripts/check.sh",
+    "smoke": "bash scripts/smoke-test.sh",
+    "stop": "docker compose -f docker/docker-compose.yml down && pnpm turbo run clean 2>/dev/null; echo \"All services stopped\"",
+    "studio": "pnpm --filter @howard-aios/database db:studio",
+    "prisma:generate": "pnpm --filter @howard-aios/database db:generate",
+    "prisma:push": "pnpm --filter @howard-aios/database db:push",
+    "prisma:pull": "pnpm --filter @howard-aios/database db:pull",
+    "prisma:migrate": "pnpm --filter @howard-aios/database db:migrate",
+    "prisma:seed": "pnpm --filter @howard-aios/database db:seed",
+    "prisma:studio": "pnpm --filter @howard-aios/database db:studio"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@eslint/js": "^9.30.1",
+    "eslint": "^9.30.1",
+    "eslint-config-prettier": "^10.1.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.36.0",
+    "@types/node": "^22.16.0"
+  }
+}

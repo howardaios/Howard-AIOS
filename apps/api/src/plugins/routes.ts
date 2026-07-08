@@ -1,0 +1,35 @@
+import type { FastifyInstance } from 'fastify';
+import { AIOS_VERSION } from '@howard-aios/types';
+import { healthRoutes } from '../routes/health';
+import { versionRoutes } from '../routes/version';
+import { authRoutes } from '../routes/auth';
+import { inboxRoutes } from '../routes/inbox';
+import { informationRoutes } from '../routes/information';
+import { meetingRoutes } from '../routes/meeting';
+import { uploadRoutes } from '../routes/upload';
+import { searchRoutes } from '../routes/search';
+import { processingRoutes } from '../routes/processing';
+import { dashboardRoutes } from '../routes/dashboard';
+import { pipelineRoutes } from '../routes/pipeline';
+import { llmRoutes } from '../routes/llm';
+import { knowledgeRoutes } from '../routes/knowledge';
+import { memoryRoutes } from '../routes/memory';
+import { ceoRoutes } from '../routes/ceo';
+export async function registerRoutes(app: FastifyInstance): Promise<void> {
+  await app.register(healthRoutes, { prefix: '/api' });
+  await app.register(versionRoutes, { prefix: '/api' });
+  await app.register(authRoutes, { prefix: '/api' });
+  await app.register(inboxRoutes, { prefix: '/api' });
+  await app.register(informationRoutes, { prefix: '/api' });
+  await app.register(meetingRoutes, { prefix: '/api' });
+  await app.register(uploadRoutes, { prefix: '/api' });
+  await app.register(searchRoutes, { prefix: '/api' });
+  await app.register(processingRoutes, { prefix: '/api' });
+  await app.register(dashboardRoutes, { prefix: '/api' });
+  await app.register(pipelineRoutes, { prefix: '/api' });
+  await app.register(llmRoutes, { prefix: '/api' });
+  await app.register(knowledgeRoutes, { prefix: '/api' });
+  await app.register(memoryRoutes, { prefix: '/api' });
+  await app.register(ceoRoutes, { prefix: '/api' });
+  app.get('/', async () => ({ success: true, code: 0, message: 'OK', data: { name: 'Howard AIOS API', version: AIOS_VERSION, status: 'running' } }));
+}

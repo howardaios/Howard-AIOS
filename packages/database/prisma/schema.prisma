@@ -1,0 +1,382 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  name           String
+  passwordHash   String        @default("")
+  role           UserRole      @default(MEMBER)
+  lastLoginAt    DateTime?
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  sessions       Session[]
+  tasks          Task[]        @relation("AssignedTasks")
+  decisions      Decision[]    @relation("MadeDecisions")
+  messages       Message[]
+  informations   Information[] @relation("SubmittedInformation")
+  inboxItems     InboxItem[]   @relation("SubmittedInbox")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+enum UserRole {
+  FOUNDER
+  ADMIN
+  MANAGER
+  MEMBER
+  VIEWER
+  GUEST
+}
+
+model Organization {
+  id          String     @id @default(uuid())
+  name        String
+  shortName   String?
+  industry    String?
+  description String?
+  users           User[]
+  meetings        Meeting[]
+  tasks           Task[]
+  decisions       Decision[]
+  documents       Document[]
+  memories        Memory[]
+  messages        Message[]
+  informations    Information[]
+  inboxItems      InboxItem[]
+  recordings      Recording[]
+  knowledgeNodes  KnowledgeNode[]
+  knowledgeEdges  KnowledgeEdge[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Meeting {
+  id             String        @id @default(uuid())
+  title          String
+  description    String?
+  location       String?
+  status         MeetingStatus @default(SCHEDULED)
+  startedAt      DateTime
+  endedAt        DateTime?
+  durationMin    Int?
+  participants   String[]
+  tags           String[]      @default([])
+  summary        String?
+  transcript     String?
+  attachments    Json?
+  metadata       Json?
+  executiveSummary String?
+  actionItems    Json?
+  decisions      Json?
+  risks          Json?
+  openQuestions  Json?
+  followUp       Json?
+  timelineEvents Json?
+  processingStatus String?
+  recordingUrl   String?
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  recordings     Recording[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId, startedAt])
+  @@index([organizationId, status, startedAt])
+}
+
+enum RecordingStatus {
+  UPLOADED
+  TRANSCRIBING
+  TRANSCRIBED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Recording {
+  id             String          @id @default(uuid())
+  meetingId      String
+  meeting        Meeting         @relation(fields: [meetingId], references: [id])
+  title          String
+  fileUrl        String?
+  fileName       String?
+  mimeType       String?
+  fileSize       Int?
+  duration       Float?
+  speakerCount   Int?
+  language       String?
+  transcript     String?
+  transcriptJson Json?
+  status         RecordingStatus @default(UPLOADED)
+  metadata       Json?
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([meetingId])
+  @@index([organizationId])
+}
+
+model Task {
+  id             String       @id @default(uuid())
+  title          String
+  description    String?
+  status         TaskStatus   @default(TODO)
+  priority       TaskPriority @default(MEDIUM)
+  assigneeId     String?
+  assignee       User?        @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  dueAt          DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Decision {
+  id             String         @id @default(uuid())
+  title          String
+  description    String?
+  status         DecisionStatus @default(PROPOSED)
+  madeById       String
+  madeBy         User           @relation("MadeDecisions", fields: [madeById], references: [id])
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  decidedAt      DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+enum DecisionStatus {
+  PROPOSED
+  DISCUSSED
+  DECIDED
+  ARCHIVED
+}
+
+enum UploadStatus {
+  UPLOADING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Document {
+  id             String       @id @default(uuid())
+  title          String
+  content        String?
+  source         String
+  type           String
+  mimeType       String?
+  fileSize       Int?
+  fileUrl        String?
+  status         UploadStatus @default(COMPLETED)
+  tags           String[]     @default([])
+  metadata       Json?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId, type, createdAt])
+  @@index([organizationId, status, createdAt])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  source         String
+  content        String
+  authorId       String?
+  author         User?        @relation(fields: [authorId], references: [id])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Memory {
+  id             String       @id @default(uuid())
+  content        String
+  source         String
+  sourceId       String?
+  tags           String[]
+  embedding      Float[]      @default([])
+  importance     Float        @default(0.5)
+  accessCount    Int          @default(0)
+  lastAccessedAt DateTime?
+  status         String       @default("active")
+  mergedFrom     String[]     @default([])
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId, status, createdAt])
+}
+
+enum SourceType {
+  MANUAL
+  WECHAT
+  DINGTALK
+  FEISHU
+  EMAIL
+  PLAUD
+  FILE
+  OCR
+  API
+  WEBHOOK
+}
+
+enum InformationStatus {
+  RECEIVED
+  NORMALIZED
+  STORED
+  ARCHIVED
+}
+
+enum InboxPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model Information {
+  id             String            @id @default(uuid())
+  title          String?
+  content        String
+  sourceType     SourceType
+  sourceDetail   String?
+  rawPayload     Json?
+  status         InformationStatus @default(RECEIVED)
+  submittedById  String?
+  submittedBy    User?             @relation("SubmittedInformation", fields: [submittedById], references: [id])
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model InboxItem {
+  id             String            @id @default(uuid())
+  sourceType     SourceType
+  sourceDetail   String?
+  title          String?
+  content        String
+  priority       InboxPriority     @default(NORMAL)
+  status         InformationStatus @default(RECEIVED)
+  rawPayload     Json?
+  metadata       Json?
+  tags           String[]          @default([])
+  archivedAt     DateTime?
+  processedAt    DateTime?
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  submittedById  String?
+  submittedBy    User?             @relation("SubmittedInbox", fields: [submittedById], references: [id])
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([organizationId, status, createdAt])
+  @@index([organizationId, sourceType, createdAt])
+  @@index([organizationId, priority, createdAt])
+}
+
+// ── Auth ────────────────────────────────────────────────────────────────────
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  accessToken  String   @unique
+  refreshToken String   @unique
+  expiresAt    DateTime
+  ip           String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([accessToken])
+  @@index([refreshToken])
+}
+
+// ── Knowledge Graph ─────────────────────────────────────────────────────────
+
+enum KnowledgeNodeType {
+  PERSON
+  COMPANY
+  TASK
+  DECISION
+  RISK
+  KEYWORD
+  TIMELINE
+  CONCEPT
+  FACT
+}
+
+model KnowledgeNode {
+  id             String            @id @default(uuid())
+  type           KnowledgeNodeType
+  title          String
+  content        String?
+  confidence     Float             @default(1.0)
+  source         String?
+  sourceId       String?
+  tags           String[]          @default([])
+  metadata       Json?
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  fromEdges      KnowledgeEdge[]   @relation("FromNode")
+  toEdges        KnowledgeEdge[]   @relation("ToNode")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([organizationId, type])
+  @@index([organizationId, sourceId])
+}
+
+model KnowledgeEdge {
+  id             String       @id @default(uuid())
+  fromId         String
+  from           KnowledgeNode @relation("FromNode", fields: [fromId], references: [id])
+  toId           String
+  to             KnowledgeNode @relation("ToNode", fields: [toId], references: [id])
+  type           String       @default("related")
+  weight         Float        @default(1.0)
+  metadata       Json?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@index([fromId])
+  @@index([toId])
+  @@index([organizationId])
+}

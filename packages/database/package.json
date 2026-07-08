@@ -1,0 +1,40 @@
+{
+  "name": "@howard-aios/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "prisma generate",
+    "dev": "prisma studio --port 5555",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf dist node_modules/.prisma",
+    "db:generate": "prisma generate",
+    "db:push": "dotenv -e ../../.env -- prisma db push",
+    "db:pull": "dotenv -e ../../.env -- prisma db pull",
+    "db:migrate": "dotenv -e ../../.env -- prisma migrate dev",
+    "db:migrate:deploy": "dotenv -e ../../.env -- prisma migrate deploy",
+    "db:seed": "dotenv -e ../../.env -- tsx src/seed.ts",
+    "db:studio": "dotenv -e ../../.env -- prisma studio --port 5555",
+    "db:format": "prisma format"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@howard-aios/types": "workspace:*",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.19.3",
+    "tsx": "^4.20.3",
+    "vitest": "^3.2.4",
+    "typescript": "^5.8.3"
+  }
+}

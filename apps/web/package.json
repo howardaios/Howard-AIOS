@@ -1,0 +1,29 @@
+{
+  "name": "@howard-aios/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev -p 3001",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .next out"
+  },
+  "dependencies": {
+    "@howard-aios/types": "workspace:*",
+    "@howard-aios/utils": "workspace:*",
+    "next": "^15.3.5",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.0",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "vitest": "^3.2.4",
+    "typescript": "^5.8.3"
+  }
+}

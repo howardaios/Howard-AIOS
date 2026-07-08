@@ -1,9 +1,57 @@
-__pycache__/
-*.pyc
-.venv/
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build
+dist/
+build/
+.next/
+out/
+
+# Turbo
+.turbo/
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# IDE
 .vscode/
+.idea/
 .cursor/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
 logs/
 *.log
+
+# Testing
+coverage/
+
+# Legacy (Python)
+.venv/
+__pycache__/
+*.pyc
+backend/
+
+# Obsolete directories
+configs/
+data/
+frontend/
+packages/eslint-config/
+packages/tsconfig/
+packages/ui/
+apps/dashboard/
+
+# Docker
+docker/volumes/
+
+# Misc
+*.tgz
+*.tsbuildinfo
