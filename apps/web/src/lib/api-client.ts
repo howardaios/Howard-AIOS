@@ -3,6 +3,8 @@
  * Used by the web app to communicate with the Fastify API.
  */
 
+import { getAuthHeaders } from './auth-fetch';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 interface ApiResponse<T> {
@@ -18,6 +20,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
     headers: {
       'Content-Type': 'application/json',
+      ...getAuthHeaders(),
       ...init?.headers,
     },
   });

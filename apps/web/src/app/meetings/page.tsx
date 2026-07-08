@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { authFetch } from '../../lib/auth-fetch';
 import { PageHeader, Input, Badge, Loading, EmptyState, Button } from '../../components/ui';
 
 interface Meeting {
@@ -49,7 +50,7 @@ export default function MeetingsPage() {
       ...(search && { search }),
       ...(statusFilter && { status: statusFilter }),
     });
-    fetch(`/api/meetings?${params}`)
+    authFetch(`/api/meetings?${params}`)
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {

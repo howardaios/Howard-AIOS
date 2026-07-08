@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Input, Badge, Button, EmptyState, Loading, ErrorState } from '../../components/ui';
+import { authFetch } from '../../lib/auth-fetch';
 
 interface InboxItem {
   id: string;
@@ -57,7 +58,7 @@ export default function InboxPage() {
       ...(sourceFilter && { sourceType: sourceFilter }),
       ...(priorityFilter && { priority: priorityFilter }),
     });
-    fetch(`/api/inbox?${params}`)
+    authFetch(`/api/inbox?${params}`)
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {

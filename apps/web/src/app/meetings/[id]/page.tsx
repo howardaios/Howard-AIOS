@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { StatCard, Card, Badge, Loading, ErrorState, EmptyState, Button } from '../../../components/ui';
+import { authFetch } from '../../../lib/auth-fetch';
 
 interface Meeting {
   id: string;
@@ -53,7 +54,7 @@ export default function MeetingDetailPage() {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/meetings/${id}`)
+    authFetch(`/api/meetings/${id}`)
       .then((r) => r.json())
       .then((res) => {
         if (res.success) setMeeting(res.data);
@@ -65,10 +66,10 @@ export default function MeetingDetailPage() {
 
   const handleProcess = () => {
     setProcessing(true);
-    fetch(`/api/meetings/${id}/process`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+    authFetch(`/api/meetings/${id}/process`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
       .then((r) => r.json())
       .then((res) => {
-        if (res.success) return fetch(`/api/meetings/${id}`).then((r) => r.json());
+        if (res.success) return authFetch(`/api/meetings/${id}`).then((r) => r.json());
       })
       .then((res) => { if (res?.success) setMeeting(res.data); })
       .catch(() => {})
@@ -77,9 +78,9 @@ export default function MeetingDetailPage() {
 
   const handleGenerateSummary = () => {
     setProcessing(true);
-    fetch(`/api/meetings/${id}/summary`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+    authFetch(`/api/meetings/${id}/summary`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
       .then((r) => r.json())
-      .then(() => fetch(`/api/meetings/${id}`).then((r) => r.json()))
+      .then(() => authFetch(`/api/meetings/${id}`).then((r) => r.json()))
       .then((res) => { if (res?.success) setMeeting(res.data); })
       .catch(() => {})
       .finally(() => setProcessing(false));
@@ -350,7 +351,7 @@ function RecordingsTab({ recordings, meetingId }: { recordings: Array<{ id: stri
 
   const handleTranscribe = (recId: string) => {
     setTranscribingId(recId);
-    fetch(`/api/meetings/${meetingId}/recordings/${recId}/transcribe`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+    authFetch(`/api/meetings/${meetingId}/recordings/${recId}/transcribe`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
       .catch(() => {})
       .finally(() => setTranscribingId(null));
   };

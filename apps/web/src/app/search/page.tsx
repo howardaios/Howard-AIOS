@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { PageHeader, Input, Button, Badge, Loading, EmptyState } from '../../components/ui';
+import { authFetch } from '../../lib/auth-fetch';
 
 interface SearchResult {
   id: string;
@@ -38,7 +39,7 @@ export default function SearchPage() {
       limit: '50',
       ...(selectedDomains.length > 0 && { domains: selectedDomains.join(',') }),
     });
-    fetch(`/api/search?${params}`)
+    authFetch(`/api/search?${params}`)
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {
