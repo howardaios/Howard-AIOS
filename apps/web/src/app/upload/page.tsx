@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { PageHeader, Card, Badge, Button, EmptyState } from '../../components/ui';
+import { authFetch } from '../../lib/auth-fetch';
 
 interface DocItem {
   id: string;
@@ -46,7 +47,7 @@ export default function UploadPage() {
 
   const fetchDocs = useCallback(() => {
     const params = new URLSearchParams({ page: String(page), pageSize: '20', ...(typeFilter && { type: typeFilter }) });
-    fetch(`/api/documents?${params}`)
+    authFetch(`/api/documents?${params}`)
       .then((r) => r.json())
       .then((res) => {
         if (res.success) {
@@ -74,7 +75,7 @@ export default function UploadPage() {
           clearInterval(interval);
           setUploads((prev) => prev.map((u) => u.id === uid ? { ...u, progress: 100, status: 'processing' } : u));
 
-          fetch('/api/documents/simulate-upload', {
+          authFetch('/api/documents/simulate-upload', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ fileName: file.name, mimeType: file.type || 'application/octet-stream', fileSize: file.size }),

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Loading, ErrorState, Badge, Tabs } from '../../../components/ui';
+import { authFetch } from '../../../lib/auth-fetch';
 
 interface CEOInboxData {
   meetings: Array<{ id: string; title: string; status: string; startedAt: string; participants: string[] }>;
@@ -23,7 +24,7 @@ export default function CEOInboxPage() {
 
   const fetchData = () => {
     setLoading(true);
-    fetch('/api/ceo/inbox').then((r) => r.json()).then((j) => { if (j.success) setData(j.data); }).catch((e) => setError(String(e))).finally(() => setLoading(false));
+    authFetch('/api/ceo/inbox').then((r) => r.json()).then((j) => { if (j.success) setData(j.data); }).catch((e) => setError(String(e))).finally(() => setLoading(false));
   };
 
   useEffect(() => { fetchData(); }, []);

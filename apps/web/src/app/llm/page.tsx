@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { PageHeader, Button, Input, EmptyState } from '../../components/ui';
+import { authFetch } from '../../lib/auth-fetch';
 
 interface ChatMsg { role: 'user' | 'assistant' | 'system'; content: string; provider?: string; model?: string }
 
@@ -22,7 +23,7 @@ export default function LLMPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/llm/chat', {
+      const res = await authFetch('/api/llm/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newMessages.map((m) => ({ role: m.role, content: m.content })), provider }),

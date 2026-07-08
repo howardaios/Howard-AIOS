@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Loading, ErrorState, Badge, StatusDot } from '../../components/ui';
+import { authFetch } from '../../lib/auth-fetch';
 
 interface OverviewData {
   todayFocus: {
@@ -64,8 +65,8 @@ export default function CEODashboard() {
   const fetchAll = () => {
     setLoading(true);
     Promise.all([
-      fetch('/api/ceo/overview').then((r) => r.json()),
-      fetch('/api/ceo/kpi').then((r) => r.json()),
+      authFetch('/api/ceo/overview').then((r) => r.json()),
+      authFetch('/api/ceo/kpi').then((r) => r.json()),
     ])
       .then(([ov, kp]) => {
         if (ov.success) setData(ov.data);

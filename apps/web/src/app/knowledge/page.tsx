@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { PageHeader, Button, Badge, Loading, EmptyState } from '../../components/ui';
+import { authFetch } from '../../lib/auth-fetch';
 
 interface KNode { id: string; type: string; title: string; content: string; confidence: number; source: string }
 interface KEdge { id: string; fromId: string; toId: string; type: string; weight: number }
@@ -14,20 +15,20 @@ export default function KnowledgePage() {
   const [filterType, setFilterType] = useState('');
 
   useEffect(() => {
-    fetch('/api/knowledge/graph').then((r) => r.json()).then((res) => {
+    authFetch('/api/knowledge/graph').then((r) => r.json()).then((res) => {
       if (res.success) { setNodes(res.data.nodes ?? []); setEdges(res.data.edges ?? []); }
     }).finally(() => setLoading(false));
   }, []);
 
   const handleExtract = () => {
     if (!extractText.trim()) return;
-    fetch('/api/knowledge/extract', {
+    authFetch('/api/knowledge/extract', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: extractText, source: 'manual' }),
     }).then((r) => r.json()).then(() => {
       setExtractText('');
-      fetch('/api/knowledge/graph').then((r) => r.json()).then((res) => {
+      authFetch('/api/knowledge/graph').then((r) => r.json()).then((res) => {
         if (res.success) { setNodes(res.data.nodes ?? []); setEdges(res.data.edges ?? []); }
       });
     });

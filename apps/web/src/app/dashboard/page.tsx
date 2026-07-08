@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../contexts/auth-context';
+import { authFetch } from '../../lib/auth-fetch';
 import {
   PageHeader,
   StatCard,
@@ -67,7 +68,7 @@ interface MemoryStats {
 }
 
 export default function DashboardPage() {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const [data, setData] = useState<DashboardData | null>(null);
   const [aiStatus, setAiStatus] = useState<AIStatus | null>(null);
   const [pipelineStatus, setPipelineStatus] = useState<PipelineStatus | null>(null);
@@ -76,21 +77,14 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const authHeaders: Record<string, string> = {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...(user?.organizationId ? { 'x-organization-id': user.organizationId } : {}),
-  };
-
-  const authFetch = (url: string) => fetch(url, { headers: authHeaders }).then((r) => r.json());
-
   const fetchData = () => {
     setLoading(true);
     Promise.all([
-      authFetch('/api/dashboard'),
-      authFetch('/api/llm/status').catch(() => null),
-      authFetch('/api/pipelines/status').catch(() => null),
-      authFetch('/api/knowledge/stats').catch(() => null),
-      authFetch('/api/memories/stats').catch(() => null),
+      authFetch('/api/dashboard').then((r: Response) => r.json()),
+      authFetch('/api/llm/status').then((r: Response) => r.json()).catch(() => null),
+      authFetch('/api/pipelines/status').then((r: Response) => r.json()).catch(() => null),
+      authFetch('/api/knowledge/stats').then((r: Response) => r.json()).catch(() => null),
+      authFetch('/api/memories/stats').then((r: Response) => r.json()).catch(() => null),
     ])
       .then(([dash, ai, pipe, know, mem]) => {
         if (dash?.success) setData(dash.data);
@@ -105,7 +99,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, []);
 
   if (loading) return <Loading />;
   if (error) return <ErrorState message={error} onRetry={fetchData} />;

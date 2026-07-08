@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { PageHeader, Card, StatCard, Button, Loading, EmptyState, Badge } from '../../components/ui';
+import { authFetch } from '../../lib/auth-fetch';
 
 export default function PipelinesPage() {
   const [status, setStatus] = useState<Record<string, unknown> | null>(null);
@@ -10,8 +11,8 @@ export default function PipelinesPage() {
 
   const fetchData = useCallback(() => {
     Promise.all([
-      fetch('/api/pipelines/status').then((r) => r.json()),
-      fetch('/api/pipelines/queue').then((r) => r.json()),
+      authFetch('/api/pipelines/status').then((r) => r.json()),
+      authFetch('/api/pipelines/queue').then((r) => r.json()),
     ])
       .then(([s, t]) => {
         if (s.success) setStatus(s.data);
@@ -23,7 +24,7 @@ export default function PipelinesPage() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const handleExecute = () => {
-    fetch('/api/pipelines/execute', {
+    authFetch('/api/pipelines/execute', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pipelineId: 'demo-pipeline', input: { message: 'Hello from UI', timestamp: Date.now() } }),

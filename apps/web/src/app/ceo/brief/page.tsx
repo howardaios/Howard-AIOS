@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Loading, ErrorState, Badge } from '../../../components/ui';
+import { authFetch } from '../../../lib/auth-fetch';
 
 interface BriefData {
   type: string;
@@ -38,7 +39,7 @@ export default function CEOBriefPage() {
 
   const fetchBrief = () => {
     setLoading(true);
-    fetch('/api/ceo/brief').then((r) => r.json()).then((j) => { if (j.success) setBrief(j.data); }).catch((e) => setError(String(e))).finally(() => setLoading(false));
+    authFetch('/api/ceo/brief').then((r) => r.json()).then((j) => { if (j.success) setBrief(j.data); }).catch((e) => setError(String(e))).finally(() => setLoading(false));
   };
 
   useEffect(() => { fetchBrief(); }, []);

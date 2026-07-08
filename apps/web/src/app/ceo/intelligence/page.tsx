@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Loading, ErrorState, Badge } from '../../../components/ui';
+import { authFetch } from '../../../lib/auth-fetch';
 
 interface IntelligenceData {
   scores: {
@@ -53,8 +54,8 @@ export default function CEOIntelligencePage() {
   const fetchAll = () => {
     setLoading(true);
     Promise.all([
-      fetch('/api/ceo/intelligence').then((r) => r.json()),
-      fetch('/api/ceo/recommendations').then((r) => r.json()),
+      authFetch('/api/ceo/intelligence').then((r) => r.json()),
+      authFetch('/api/ceo/recommendations').then((r) => r.json()),
     ])
       .then(([i, r]) => {
         if (i.success) setIntel(i.data);
